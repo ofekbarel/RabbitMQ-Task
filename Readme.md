@@ -46,25 +46,24 @@ Ensure you have the following installed and set up:
 
    Save the following code as `publisher.py`:
    ```python
-   import pika
+   import pika 
 
-   def publish_messages():
-       connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-       channel = connection.channel()
+connection_parameters = pika.ConnectionParameters('localhost')
 
-       channel.queue_declare(queue='abc')
+connection = pika.BlockingConnection(connection_parameters)
 
-       for i in range(10):
-           message = f'Message {i}'
-           channel.basic_publish(exchange='',
-                                 routing_key='abc',
-                                 body=message)
-           print(f"Sent: {message}")
+channel = connection.channel()
 
-       connection.close()
+channel.queue_declare(queue='ABC')
 
-   if __name__ == "__main__":
-       publish_messages()
+for i in range(10):
+    massage = f"Massage {i + 1}"
+    channel.basic_publish(exchange='', routing_key='ABC', body=massage)
+    print(f"Massages sent: {massage}")
+
+
+
+connection.close
    ```
 
    Execute the script with:
@@ -78,25 +77,22 @@ Ensure you have the following installed and set up:
    Save the following code as `consumer.py`:
    ```python
    import pika
+def on_massage_recived(ch, method, properties, body):
+    print(f"recived new massage: {body}")
 
-   def consume_messages():
-       connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-       channel = connection.channel()
+connction_parameters = pika.ConnectionParameters('localhost')
 
-       channel.queue_declare(queue='abc')
+connection = pika.BlockingConnection(connction_parameters)
 
-       def callback(ch, method, properties, body):
-           print(f"Received: {body.decode()}")
+channel = connection.channel()
 
-       channel.basic_consume(queue='abc',
-                             on_message_callback=callback,
-                             auto_ack=True)
+channel.queue_declare(queue='ABC')
 
-       print('Waiting for messages. To exit press CTRL+C')
-       channel.start_consuming()
 
-   if __name__ == "__main__":
-       consume_messages()
+channel.basic_consume(queue='ABC', auto_ack=True, on_message_callback=on_massage_recived)
+
+print("Starting")
+channel.start_consuming()
    ```
 
    Execute the script with:
