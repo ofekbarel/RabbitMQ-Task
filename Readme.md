@@ -41,7 +41,7 @@ Ensure you have the following installed and set up:
    pip install pika
    ```
 
-2. **Publisher Script**:
+2. **Consumer Script**:
     ```python
    import pika
 
@@ -71,7 +71,7 @@ Ensure you have the following installed and set up:
    python3 publisher.py
    ```
 
-3. **Consumer Script**:
+3. **Producer Script**:
    This script listens for messages from the RabbitMQ queue `abc` and prints them to the terminal.
 
    Save the following code as `consumer.py`:
@@ -85,7 +85,7 @@ Ensure you have the following installed and set up:
        channel.queue_declare(queue='abc')
 
        for i in range(10):
-           message = f'Message {i}'
+           message = f'Message {i+1}'
            channel.basic_publish(exchange='',
                                  routing_key='abc',
                                  body=message)
