@@ -42,29 +42,29 @@ Ensure you have the following installed and set up:
    ```
 
 2. **Publisher Script**:
-   This script sends 10 messages to the RabbitMQ queue named `abc`.
+    ```python
+   import pika
 
-   Save the following code as `publisher.py`:
-   ```python
-   import pika 
+   def consume_messages():
+       connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+       channel = connection.channel()
 
-connection_parameters = pika.ConnectionParameters('localhost')
+       channel.queue_declare(queue='abc')
 
-connection = pika.BlockingConnection(connection_parameters)
+       def callback(ch, method, properties, body):
+           print(f"Received: {body.decode()}")
 
-channel = connection.channel()
+       channel.basic_consume(queue='abc',
+                             on_message_callback=callback,
+                             auto_ack=True)
 
-channel.queue_declare(queue='ABC')
+    print("Starting")
+    channel.start_consuming()
 
-for i in range(10):
-    massage = f"Massage {i + 1}"
-    channel.basic_publish(exchange='', routing_key='ABC', body=massage)
-    print(f"Massages sent: {massage}")
-
-
-
-connection.close
+   
    ```
+
+   Ex
 
    Execute the script with:
    ```bash
