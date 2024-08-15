@@ -64,11 +64,11 @@ Ensure you have the following installed and set up:
    
    ```
 
-   Ex
+   
 
    Execute the script with:
    ```bash
-   python3 publisher.py
+   python3 Consumer.py
    ```
 
 3. **Producer Script**:
@@ -93,8 +93,7 @@ Ensure you have the following installed and set up:
 
        connection.close()
 
-   if __name__ == "__main__":
-       publish_messages()
+   
    ```
 
    Execute the script with:
