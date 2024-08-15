@@ -77,22 +77,55 @@ Ensure you have the following installed and set up:
    Save the following code as `consumer.py`:
    ```python
    import pika
-def on_massage_recived(ch, method, properties, body):
-    print(f"recived new massage: {body}")
 
-connction_parameters = pika.ConnectionParameters('localhost')
+   def publish_messages():
+       connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+       channel = connection.channel()
 
-connection = pika.BlockingConnection(connction_parameters)
+       channel.queue_declare(queue='abc')
 
-channel = connection.channel()
+       for i in range(10):
+           message = f'Message {i}'
+           channel.basic_publish(exchange='',
+                                 routing_key='abc',
+                                 body=message)
+           print(f"Sent: {message}")
 
-channel.queue_declare(queue='ABC')
+       connection.close()
 
+   if __name__ == "__main__":
+       publish_messages()
+   ```
 
-channel.basic_consume(queue='ABC', auto_ack=True, on_message_callback=on_massage_recived)
+   Execute the script with:
+   ```bash
+   python3 publisher.py
+   ```
 
-print("Starting")
-channel.start_consuming()
+3. **Consumer Script**:
+   This script listens for messages from the RabbitMQ queue `abc` and prints them to the terminal.
+
+   Save the following code as `consumer.py`:
+   ```python
+   import pika
+
+   def consume_messages():
+       connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+       channel = connection.channel()
+
+       channel.queue_declare(queue='abc')
+
+       def callback(ch, method, properties, body):
+           print(f"Received: {body.decode()}")
+
+       channel.basic_consume(queue='abc',
+                             on_message_callback=callback,
+                             auto_ack=True)
+
+   print("Starting")
+   channel.start_consuming()
+
+   
    ```
 
    Execute the script with:
